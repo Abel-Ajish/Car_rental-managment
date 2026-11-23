@@ -2,6 +2,21 @@ import mysql.connector
 mydbint=mysql.connector.connect(host='localhost',user='root',password='1234')
 mycursor=mydbint.cursor()
 
+try: #check if database exists or not, if not create a new database
+    mycursor.execute("CREATE DATABASE car_rental")
+    print("Database created successfully")
+except:
+    print("Database already exists")
+    mycursor.execute("USE car_rental")
+
+try: #check if table exists or not, if not create a new table
+    mycursor.execute("CREATE TABLE car (eno INT primary key, make VARCHAR(255), year INT, brand VARCHAR(255), price INT, qnty INT)") 
+    mycursor.execute("CREATE TABLE member (Mno int primary key,Mname varchar(255),Tel int ,Age int ,Car_no int)")
+    print("Table created successfully")
+except:
+    print("Table already exists")
+
+
 
 def main_menu(): # main menu function
     print("welcome to car rental Mangement system")
@@ -17,8 +32,15 @@ def main_menu(): # main menu function
     print("7. view report's") # not sure
     print("8. Exit")
     print("--------------------------------")
-    choice = input("Enter your choice: ")
+
+    try:
+        choice = int(input("Enter your choice: "))
+    except:
+        print("Invalid input. Please enter a number.")
+        main_menu()
+
     print("You selected option: ", choice)
+
 
     # choice condition below 
     if choice == '0':
@@ -39,15 +61,24 @@ def main_menu(): # main menu function
         view_reports()
     elif choice == '8':
         exit()
+    else:
+        print("Invalid choice")
+        main_menu()
 
-# option 1 (show cars available) function to be added later
+
+
+# option 0 (show cars available) function to be added later
 def show_cars_available():
     print("Show cars available")
-    print("function to be added later")
+    mycursor.execute("SELECT * FROM car_rental.car")
+    result = mycursor.fetchall()
+    for row in result:
+        print(row)
     main_menu() 
 
 
-#option 2 (add a new data) function to add a new member or car
+
+#option 1 (add a new data) function to add a new member or car
 def add_data():
     print("Add a new Data")
     print("1. Add a new member")
@@ -70,11 +101,15 @@ def add_member():#function to add a new member
     age = input("Enter member Age: ")
     car_no = input("Enter member car number: ")
 
-    query= "INSERT INTO car_rental.member (member_no, name, phone, age , car_no)"
-    val = (member_no, name, phone, age, car_no)
-    mycursor.execute(query, val)
-    mydbint.commit()
-    main_menu()
+    try:
+        query= "INSERT INTO car_rental.member (member_no, name, phone, age , car_no)"
+        val = (member_no, name, phone, age, car_no)
+        mycursor.execute(query, val)
+        mydbint.commit()
+        main_menu()
+    except:
+        print("Error occurred while adding member")
+        main_menu()
 
 def add_car(): #function to add a new car
     print("Add a new car")
@@ -85,14 +120,19 @@ def add_car(): #function to add a new car
     price = input("Enter Price: ")
     qnty = input("Enter number of cars: ")
 
-    query= "INSERT INTO car_rental.car (car_no, make, year, brand, price, qnty)"
-    val = (car_no, make, year, brand, price, qnty)
-    mycursor.execute(query, val)
-    mydbint.commit()
-    main_menu()
+    try:
+        query= "INSERT INTO car_rental.car (car_no, make, year, brand, price, qnty)"
+        val = (car_no, make, year, brand, price, qnty)
+        mycursor.execute(query, val)
+        mydbint.commit()
+        main_menu()
+    except:
+        print("Error occurred while adding car")
+        main_menu()
 
 
-#option 3 (search) function to search for a member or car
+
+#option 2 (search) function to search for a member or car
 def search(): #function to search for a member or car
     print("Search")
     print("1. Search for a member")
@@ -106,7 +146,10 @@ def search(): #function to search for a member or car
         search_car()
     elif choice == '3':
         main_menu()
-    
+    else:
+        print("Invalid choice")
+        search()
+
 def search_member(): #function to search for a member
     print("Search for a member")
     member_no = input("Enter member number: ")
@@ -120,7 +163,7 @@ def search_member(): #function to search for a member
         print("Member not found")
     main_menu()
 
-def search_car():#function to search for a car
+def search_car(): #function to search for a car
     print("Search for a car")
     car_no = input("Enter car number: ")
     query = "SELECT * FROM car_rental.car WHERE car_no = %s"
@@ -133,7 +176,9 @@ def search_car():#function to search for a car
         print("Car not found")
     main_menu()
 
-#option 4 (rent a car) function to rent a car
+
+
+#option 3 (rent a car) function to rent a car
 def rent_car(): #function to rent a car
     print("Rent a car")
     member_no = input("Enter member number: ")
@@ -159,7 +204,8 @@ def rent_car(): #function to rent a car
     main_menu()
 
 
-#option 5 (return a car) function to return a car with bill
+
+#option 4 (return a car) function to return a car with bill
 def return_car(): #function to return a car
     print("Return a car")
     member_no = input("Enter member number: ")
@@ -183,7 +229,8 @@ def return_car(): #function to return a car
     main_menu()
 
 
-#option 6 (update member details) function to update member details
+
+#option 5 (update member details) function to update member details
 def update_member(): #function to update member details
     print("Update member details")
     member_no = input("Enter member number: ")
@@ -207,7 +254,8 @@ def update_member(): #function to update member details
     main_menu()
 
 
-#option 7 (delete a member) function to delete a member
+
+#option 6 (delete a member) function to delete a member
 def delete_member(): #function to delete a member
     print("Delete a member")
     member_no = input("Enter member number: ")
@@ -226,13 +274,19 @@ def delete_member(): #function to delete a member
         print("Member not found")
     main_menu()
 
-#option 8 (view reports) function to view reports
+
+
+#option 7 (view reports) function to view reports
 def view_reports(): #function to view reports
     print("View reports")
     print("1. View all members")
     print("2. View all cars")
     print("3. Back to main menu")
-    choice = input("Enter your choice: ")
+    try:
+        choice = int(input("Enter your choice: "))
+    except:
+        print("Invalid input. Please enter a number.")
+        view_reports()
 
     if choice == '1':
         view_all_members()
@@ -240,12 +294,32 @@ def view_reports(): #function to view reports
         view_all_cars()
     elif choice == '3':
         main_menu()
+    else:
+        print("Invalid choice")
+        view_reports()
 
 def view_all_members(): #function to view all members
-    print("will be implmented later")
+    mycursor.execute("SELECT * FROM car_rental.member")
+    result = mycursor.fetchall()
+    for row in result:
+        print(row)
     main_menu()
 
 def view_all_cars(): #function to view all cars
-    print("will be implmented later")
+    mycursor.execute("SELECT * FROM car_rental.car")
+    result = mycursor.fetchall()
+    for row in result:
+        print(row)
     main_menu()
 
+
+
+#option 8 (exit) function to exit the program
+def exit(): # option 8 function to exit the program
+    print("Exiting the program")
+    mydbint.close() # close the database connection
+    quit()
+
+
+main_menu() # call main menu function to start the program
+# Car rental managment software group project 10 
