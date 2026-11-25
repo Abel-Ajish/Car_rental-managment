@@ -1,5 +1,5 @@
 import mysql.connector
-mydbint=mysql.connector.connect(host='localhost',user='root',password='1234')
+mydbint=mysql.connector.connect(host='localhost',user='root',password='12345678')
 mycursor=mydbint.cursor()
 
 try: #check if database exists or not, if not create a new database
@@ -40,26 +40,27 @@ def main_menu(): # main menu function
         main_menu()
 
     print("You selected option: ", choice)
+    print("--------------------------------")
 
 
     # choice condition below 
-    if choice == '0':
+    if choice == 0:
         show_cars_available()
-    elif choice == '1': 
+    elif choice == 1: 
         add_data()
-    elif choice == '2':
+    elif choice == 2:
         search()
-    elif choice == '3':
+    elif choice == 3:
         rent_car()
-    elif choice == '4':
+    elif choice == 4:
         return_car()
-    elif choice == '5':
+    elif choice == 5:
         update_member()
-    elif choice == '6':
+    elif choice == 6:
         delete_member()
-    elif choice == '7':
+    elif choice == 7:
         view_reports()
-    elif choice == '8':
+    elif choice == 8:
         exit()
     else:
         print("Invalid choice")
@@ -86,11 +87,14 @@ def add_data():
     print("3. Back to main menu")
     choice = input("Enter your choice: ")
 
-    if choice == '1':
+    if choice == 1:
         add_member()
-    elif choice == '2':
+    elif choice == 2:
         add_car()
-    elif choice == '3':
+    elif choice == 3:
+        main_menu()
+    else:
+        print("Invalid choice")
         main_menu()
 
 def add_member():#function to add a new member
@@ -140,15 +144,15 @@ def search(): #function to search for a member or car
     print("3. Back to main menu")
     choice = input("Enter your choice: ")
 
-    if choice == '1':
+    if choice == 1:
         search_member()
-    elif choice == '2':
+    elif choice == 2:
         search_car()
-    elif choice == '3':
+    elif choice == 3:
         main_menu()
     else:
         print("Invalid choice")
-        search()
+        main_menu()
 
 def search_member(): #function to search for a member
     print("Search for a member")
@@ -288,15 +292,15 @@ def view_reports(): #function to view reports
         print("Invalid input. Please enter a number.")
         view_reports()
 
-    if choice == '1':
+    if choice == 1:
         view_all_members()
-    elif choice == '2':
+    elif choice == 2:
         view_all_cars()
-    elif choice == '3':
+    elif choice == 3:
         main_menu()
     else:
         print("Invalid choice")
-        view_reports()
+        main_menu()
 
 def view_all_members(): #function to view all members
     mycursor.execute("SELECT * FROM car_rental.member")
